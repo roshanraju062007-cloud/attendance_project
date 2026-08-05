@@ -4163,10 +4163,14 @@
             <button class="btn line" onclick="openServerBackups()">☁ Restore from server</button>
             <button class="btn line" style="grid-column:1 / -1" onclick="openRoster()">✎ Edit class roster &amp; phone
               numbers</button>
-            <label class="btn line"
-              style="cursor:pointer;text-align:center;display:flex;align-items:center;justify-content:center;grid-column:1 / -1">Import
-              roster from CSV<input type="file" accept=".csv,text/csv" onchange="importRosterCSV(this)"
-                style="display:none"></label>
+            <div style="grid-column:1 / -1; display:flex; gap:8px;">
+              <label class="btn line" style="flex:1; cursor:pointer;text-align:center;display:flex;align-items:center;justify-content:center;margin:0">Import Roster CSV<input type="file" accept=".csv,text/csv" onchange="importRosterCSV(this)" style="display:none"></label>
+              <button class="btn line" style="flex:1" onclick="exportRosterCSV()">Export Roster CSV</button>
+            </div>
+            <div style="grid-column:1 / -1; display:flex; gap:8px;">
+              <label class="btn line" style="flex:1; cursor:pointer;text-align:center;display:flex;align-items:center;justify-content:center;margin:0">Import History CSV<input type="file" accept=".csv,text/csv" onchange="importHistoryCSV(this)" style="display:none"></label>
+              <button class="btn line" style="flex:1" onclick="exportHistoryCSV()">Export History CSV</button>
+            </div>
           </div>
           <div class="trk-list" id="trkList"></div>
           <div class="trk-note">GOLD BAR = DETENTION &middot; RED = CONDONATION (THRESHOLDS SET ABOVE) &middot; TAP A
@@ -5472,15 +5476,104 @@
       navigator.clipboard.writeText(out).then(() => toast(rows.length + ' letter' + (rows.length === 1 ? '' : 's') + ' copied'), () => toast('Copy blocked by browser'));
     }
 
-    /* ═══════════════ ROSTER CSV IMPORT ═══════════════ */
+    /* ═══════════════ ROSTER CSV IMPORT/EXPORT ═══════════════ */
+    function exportRosterCSV() {
+      if (!ROSTER || !ROSTER.length) { if (typeof toast === 'function') toast('Roster is empty'); return; }
+      const head = ['Roll No', 'Name', 'Register No', 'Phone', 'Parent Phone'];
+      const lines = [head, ...ROSTER.map(r => [r.n || '', r.name || '', r.reg || '', r.ph || '', r.pa || ''])];
+      const csv = lines.map(row => row.map(csvCell).join(',')).join('\r\n');
+      downloadBlob(csv, (($('pClass').value || 'ARGUS').trim()) + '_roster.csv', 'text/csv');
+      if (typeof toast === 'function') toast('Roster exported');
+    }
+
+    function _parseCSV(text) {
+      let ret = [], p = '', q = false;
+      for (let i = 0; i < text.length; i++) {
+        let c = text[i];
+        if (c === '"') { if (q && text[i+1] === '"') { p += '"'; i++; } else { q = !q; } }
+        else if (c === ',' && !q) { ret.push(p.trim()); p = ''; }
+        else { p += c; }
+      }
+      ret.push(p.trim()); return ret;
+    }
+
     function importRosterCSV(input) {
       const f = input.files && input.files[0]; if (!f) return; const rd = new FileReader();
       rd.onload = () => {
         try {
-          const names = []; String(rd.result).split(/\r?\n/).forEach(line => { if (!line.trim()) return; const c = line.split(',')[0].replace(/^"|"$/g, '').trim(); if (c && c.toLowerCase() !== 'name') names.push(c); });
-          let added = 0; names.forEach(n => { if (!S.roster.includes(n)) { S.roster.push(n); added++; } });
-          save(); render(); toast(added + ' name' + (added === 1 ? '' : 's') + ' added to roster');
-        } catch (e) { toast('Could not read that CSV'); } input.value = '';
+          const lines = String(rd.result).split(/\r?\n/).filter(line => line.trim());
+          if (!lines.length) throw new Error('Empty');
+          const data = lines.slice(1).map(line => {
+             const cols = _parseCSV(line);
+             return { n: cols[0] || '', name: cols[1] || '', reg: cols[2] || '', ph: cols[3] || '', pa: cols[4] || '' };
+          }).filter(r => r.name);
+          
+          if (data.length) {
+            ROSTER = data; S.classRoster = data; S.roster = data.map(d => d.name);
+            if (typeof save === 'function') save(); if (typeof render === 'function') render(); 
+            if (typeof toast === 'function') toast(data.length + ' students imported to roster');
+          } else {
+            if (typeof toast === 'function') toast('No valid names found in CSV');
+          }
+        } catch (e) { if (typeof toast === 'function') toast('Could not read that CSV'); } input.value = '';
+      };
+      rd.readAsText(f);
+    }
+
+    /* ═══════════════ HISTORY CSV IMPORT/EXPORT ═══════════════ */
+    function exportHistoryCSV() {
+      if (!S.history || !S.history.length) { if (typeof toast === 'function') toast('No attendance history'); return; }
+      const head = ['Date', 'Student Name', 'Status', 'Reason', 'Remark'];
+      const lines = [head];
+      
+      S.history.forEach(h => {
+         const date = h.params ? h.params.pDate : '';
+         if (!date) return;
+         if (h.absentees && h.absentees.length) {
+           h.absentees.forEach(a => { lines.push([date, a.name, a.status || 'absent', a.reason || '', a.remark || '']); });
+         } else {
+           lines.push([date, '(100% Attendance)', 'held', '', '']);
+         }
+      });
+      const csv = lines.map(row => row.map(csvCell).join(',')).join('\r\n');
+      downloadBlob(csv, (($('pClass').value || 'ARGUS').trim()) + '_history.csv', 'text/csv');
+      if (typeof toast === 'function') toast('History exported');
+    }
+
+    function importHistoryCSV(input) {
+      const f = input.files && input.files[0]; if (!f) return; const rd = new FileReader();
+      rd.onload = () => {
+        try {
+          const lines = String(rd.result).split(/\r?\n/).filter(line => line.trim());
+          if (lines.length < 2) throw new Error('Empty');
+          
+          const groups = {}; 
+          lines.slice(1).forEach(line => {
+             const cols = _parseCSV(line);
+             const date = cols[0], name = cols[1], status = cols[2], reason = cols[3] || '', remark = cols[4] || '';
+             if (!date) return;
+             if (!groups[date]) groups[date] = [];
+             if (name && name !== '(100% Attendance)' && status !== 'held') {
+                 groups[date].push({ name, status, reason, remark });
+             }
+          });
+          
+          const newHistory = [];
+          Object.keys(groups).forEach(date => {
+             newHistory.push({
+                 params: { pDate: date, pHour: 'Auto', pSubj: 'Import', pClass: $('pClass').value || 'ARGUS', pFac: '' },
+                 absentees: groups[date]
+             });
+          });
+          
+          if (newHistory.length) {
+            S.history = newHistory.sort((a,b) => (b.params.pDate || '').localeCompare(a.params.pDate || ''));
+            if (typeof save === 'function') save(); if (typeof render === 'function') render();
+            if (typeof toast === 'function') toast(newHistory.length + ' class sessions imported');
+          } else {
+             if (typeof toast === 'function') toast('No history records found in CSV');
+          }
+        } catch (e) { if (typeof toast === 'function') toast('Could not read that CSV'); } input.value = '';
       };
       rd.readAsText(f);
     }
