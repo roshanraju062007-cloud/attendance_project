@@ -5514,7 +5514,7 @@
           if (added > 0) pushUndo();
           if (typeof save === 'function') save(); 
           if (typeof render === 'function') render();
-          if (typeof toast === 'function') toast(added + ' students added to today\\'s log');
+          if (typeof toast === 'function') toast(added + ` students added to today's log`);
           
         } catch (e) { if (typeof toast === 'function') toast('Could not read that CSV'); } 
         input.value = '';
