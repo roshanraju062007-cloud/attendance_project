@@ -3987,7 +3987,10 @@
                 <b>G</b>rooming / <b>S</b>uspended sets status &amp; picks · then a reason letter (repeat to cycle) →
                 <b>Enter</b> adds · <b>?</b> all shortcuts</div>
               <button class="btn" onclick="addAbsentee()">Add to today's log &nbsp;↵</button>
-              <button class="btn scanbtn" onclick="openScan()">📷 Scan register</button>
+              <div style="display:flex; gap:8px; margin-top:8px;">
+                <button class="btn scanbtn" style="flex:1" onclick="openScan()">📷 Scan register</button>
+                <label class="btn scanbtn" style="flex:1; cursor:pointer; display:flex; align-items:center; justify-content:center; margin:0">📤 Upload Today's CSV<input type="file" accept=".csv,text/csv" onchange="importTodayCSV(this)" style="display:none"></label>
+              </div>
               <div class="quick" id="quickRoster"></div>
             </div>
 
@@ -5474,6 +5477,49 @@
       const title = tier === 'cond' ? 'CONDONATION LETTERS · BELOW 65%' : 'SHORTAGE / DETENTION LETTERS · BELOW 75%';
       const out = `${title}\n${'='.repeat(title.length)}\n\n` + rows.map(letterFor).join('\n\n──────────────────────────────\n\n');
       navigator.clipboard.writeText(out).then(() => toast(rows.length + ' letter' + (rows.length === 1 ? '' : 's') + ' copied'), () => toast('Copy blocked by browser'));
+    }
+
+    /* ═══════════════ TODAY'S CSV IMPORT ═══════════════ */
+    function importTodayCSV(input) {
+      const f = input.files && input.files[0]; if (!f) return; const rd = new FileReader();
+      rd.onload = () => {
+        try {
+          const lines = String(rd.result).split(/\r?\n/).filter(line => line.trim());
+          if (lines.length < 2) throw new Error('Empty');
+          let added = 0;
+          lines.slice(1).forEach(line => {
+             const cols = _parseCSV(line);
+             let name = cols[0], status = cols[1], reason = cols[2], remark = cols[3];
+             // If first col looks like a date (YYYY-MM-DD), shift right
+             if (name && name.length === 10 && name.charAt(4) === '-') { 
+                name = cols[1]; status = cols[2]; reason = cols[3]; remark = cols[4];
+             }
+             if (!name || name === '(100% Attendance)' || status === 'held') return;
+             
+             const ro = (window.ROSTER || []).find(r => r.name.toLowerCase() === name.toLowerCase());
+             const finalName = ro ? ro.name : name;
+             
+             if (!S.absentees.find(a => a.name === finalName)) {
+                 S.absentees.push({ 
+                     name: finalName, 
+                     status: status || 'absent', 
+                     reason: reason || '', 
+                     remark: remark || (typeof DEF_REMARK === 'function' ? DEF_REMARK(status || 'absent') : '')
+                 });
+                 if (!S.roster.includes(finalName)) S.roster.push(finalName);
+                 added++;
+             }
+          });
+          
+          if (added > 0) pushUndo();
+          if (typeof save === 'function') save(); 
+          if (typeof render === 'function') render();
+          if (typeof toast === 'function') toast(added + ' students added to today\\'s log');
+          
+        } catch (e) { if (typeof toast === 'function') toast('Could not read that CSV'); } 
+        input.value = '';
+      };
+      rd.readAsText(f);
     }
 
     /* ═══════════════ ROSTER CSV IMPORT/EXPORT ═══════════════ */
