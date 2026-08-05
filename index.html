@@ -4573,7 +4573,7 @@
     const SYNC = { url: localStorage.getItem('argus_sync_url') || '', key: localStorage.getItem('argus_sync_key') || '' };
     const supabaseUrl = 'https://evykovpnwfunyrfutggj.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV2eWtvdnBud2Z1bnlyZnV0Z2dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU5MTExNzEsImV4cCI6MjEwMTQ4NzE3MX0.w-rnCL6TAzgRDHZRiuVFTtClSLHDXEke3gUsQANWrho';
-    const supabase = window.supabase ? window.supabase.createClient(supabaseUrl, supabaseKey) : null;
+    const supabaseClient = window.supabase ? window.supabase.createClient(supabaseUrl, supabaseKey) : null;
     const syncOn = () => !!(SYNC.key);
     const hhmm = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     function setSync(txt, cls) { const d = $('sDot'), t = $('sStatus'); if (!d) return; t.textContent = txt; d.className = 'sdot ' + (cls || ''); }
@@ -4586,8 +4586,8 @@
       if (!syncOn()) return; setSync('Syncing…', 'busy');
       try {
         let d = null;
-        if (supabase) {
-          const { data, error } = await supabase.from('argus_sync').select('state').eq('sync_key', SYNC.key).order('created_at', { ascending: false }).limit(1);
+        if (supabaseClient) {
+          const { data, error } = await supabaseClient.from('argus_sync').select('state').eq('sync_key', SYNC.key).order('created_at', { ascending: false }).limit(1);
           if (error) throw error;
           if (data && data.length > 0) d = data[0].state;
         } else {
@@ -4605,8 +4605,8 @@
       _pushT = setTimeout(async () => {
         setSync('Syncing…', 'busy');
         try {
-          if (supabase) {
-            const { error } = await supabase.from('argus_sync').insert([{ sync_key: SYNC.key, state: S }]);
+          if (supabaseClient) {
+            const { error } = await supabaseClient.from('argus_sync').insert([{ sync_key: SYNC.key, state: S }]);
             if (error) throw error;
           } else {
             const r = await fetch(SYNC.url, { method: 'POST', headers: { 'X-Sync-Key': SYNC.key, 'Content-Type': 'application/json' }, body: JSON.stringify(S) });
@@ -6523,8 +6523,8 @@
       if (typeof toast === 'function') toast('Backing up…');
       try {
         if (typeof save === 'function') save();                 // capture latest form state + bump _ts
-        if (supabase) {
-          const { error } = await supabase.from('argus_sync').insert([{ sync_key: SYNC.key, state: S }]);
+        if (supabaseClient) {
+          const { error } = await supabaseClient.from('argus_sync').insert([{ sync_key: SYNC.key, state: S }]);
           if (error) throw error;
           if (typeof toast === 'function') toast('Backed up to server ✓');
         } else {
@@ -6544,8 +6544,8 @@
       host.classList.add('on');
       try {
         var list = [];
-        if (supabase) {
-          const { data, error } = await supabase.from('argus_sync').select('created_at').eq('sync_key', SYNC.key).order('created_at', { ascending: false });
+        if (supabaseClient) {
+          const { data, error } = await supabaseClient.from('argus_sync').select('created_at').eq('sync_key', SYNC.key).order('created_at', { ascending: false });
           if (error) throw error;
           list = data.map(d => new Date(d.created_at).getTime());
         } else {
@@ -6574,8 +6574,8 @@
       if (!confirm('Restore the backup from ' + new Date(+ts).toLocaleString() + '?\n\nThis replaces the current data on every device that uses this key.')) return;
       try {
         var data = null;
-        if (supabase) {
-          const { data: records, error } = await supabase.from('argus_sync').select('state').eq('sync_key', SYNC.key).eq('created_at', new Date(+ts).toISOString());
+        if (supabaseClient) {
+          const { data: records, error } = await supabaseClient.from('argus_sync').select('state').eq('sync_key', SYNC.key).eq('created_at', new Date(+ts).toISOString());
           if (error) throw error;
           if (!records || !records.length) throw new Error('Backup not found');
           data = records[0].state;
