@@ -5419,26 +5419,42 @@
       const row = drill ? drill.previousElementSibling : null; (row || drill || $('trkList')).scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
-    /* ═══════════════ QUICK ROSTER ═══════════════ */
+    function isLogOrUUID(name) {
+      if (!name) return true;
+      const s = String(name).trim();
+      if (s.length > 18 && (s.includes('-') || s.includes('_')) && !s.includes(' ')) return true;
+      if (/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(s)) return true;
+      if (/^[0-9a-fA-F-]{20,}$/.test(s)) return true;
+      if (s.startsWith('-') || s.startsWith('log_') || s.startsWith('uuid_')) return true;
+      return false;
+    }
+
     window.clearRosterLogs = function() {
-      if (!confirm('Clear all log entries (UUIDs) from the roster?')) return;
-      S.roster = (S.roster || []).filter(n => {
-        const str = n.trim();
-        return !(str.length > 25 && str.includes('-') && !str.includes(' '));
-      });
+      if (!confirm('Clear all log entries (UUIDs) from the roster and current absentees list?')) return;
+      S.roster = (S.roster || []).filter(n => !isLogOrUUID(n));
+      S.absentees = (S.absentees || []).filter(a => !isLogOrUUID(a.name));
       save();
       render();
     };
+
     function renderQuick() {
       const el = $('quickRoster'); if (!el) return;
+      if (Array.isArray(S.roster)) {
+        const origLen = S.roster.length;
+        S.roster = S.roster.filter(n => !isLogOrUUID(n));
+        if (S.roster.length !== origLen && typeof save === 'function') save();
+      }
+      if (Array.isArray(S.absentees)) {
+        S.absentees = S.absentees.filter(a => !isLogOrUUID(a.name));
+      }
       const logged = new Set(S.absentees.map(a => a.name.trim()));
-      const names = (S.roster || []).filter(n => !logged.has(n.trim()));
+      const names = (S.roster || []).filter(n => !isLogOrUUID(n) && !logged.has(n.trim()));
       el.innerHTML = names.length ? `<div class="quick-lab" style="display:flex; justify-content:space-between; align-items:center;">
         <span>Quick add from roster · one tap = informed absence</span>
-        <button class="btn" style="padding:2px 8px; font-size:0.8rem; background:transparent; border:1px solid #555; color:#ccc; border-radius:4px; cursor:pointer;" onclick="clearRosterLogs()">Clear Logs</button>
+        <button class="btn" style="padding:4px 10px; font-size:0.8rem; background:#ef4444; border:none; color:#fff; border-radius:4px; cursor:pointer; font-weight:600;" onclick="clearRosterLogs()">Clear Logs</button>
       </div><div class="quick-chips">${names.map(n => `<button class="quick-chip" data-name="${esc(n)}">+ ${esc(n)}</button>`).join('')}</div>` : '';
     }
-    function quickAdd(name) { if (!name) return; pushUndo(); S.absentees.push({ name, status: 'informed', reason: '', remark: DEF_REMARK('informed') }); if (!S.roster.includes(name)) S.roster.push(name); save(); render(); toast(name + ' logged (informed)'); }
+    function quickAdd(name) { if (!name || isLogOrUUID(name)) return; pushUndo(); S.absentees.push({ name, status: 'informed', reason: '', remark: DEF_REMARK('informed') }); if (!S.roster.includes(name)) S.roster.push(name); save(); render(); toast(name + ' logged (informed)'); }
 
     /* ═══════════════ UNDO ═══════════════ */
     let undoStack = [];
