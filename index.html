@@ -3817,6 +3817,234 @@
       text-transform: uppercase;
       color: var(--faint)
     }
+
+    /* ── Hour-by-hour attendance grid ── */
+    .hr-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px
+    }
+
+    .hr-date {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px
+    }
+
+    .hr-date label {
+      display: block;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--faint);
+      margin-bottom: 4px
+    }
+
+    .hr-date input[type=date] {
+      padding: 8px 10px
+    }
+
+    .hr-todaybtn {
+      width: auto;
+      padding: 8px 14px
+    }
+
+    .hr-legend {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .hr-key {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: .06em;
+      padding: 5px 9px;
+      border-radius: 6px;
+      border: 1px solid var(--line2)
+    }
+
+    .hr-key.hp {
+      color: var(--green);
+      border-color: color-mix(in srgb, var(--green) 45%, transparent)
+    }
+
+    .hr-key.ha {
+      color: var(--red);
+      border-color: color-mix(in srgb, var(--red) 45%, transparent)
+    }
+
+    .hr-key.ho {
+      color: var(--gold);
+      border-color: color-mix(in srgb, var(--gold) 45%, transparent)
+    }
+
+    .hr-bulk {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px
+    }
+
+    .hr-bulk .btn {
+      width: auto;
+      flex: 1 1 auto;
+      min-width: 130px
+    }
+
+    .hr-filelbl {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0
+    }
+
+    .hr-stat {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px
+    }
+
+    .hr-chip {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .05em;
+      padding: 6px 11px;
+      border-radius: 8px;
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      color: var(--muted)
+    }
+
+    .hr-chip b {
+      color: var(--ink)
+    }
+
+    .hr-gridwrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 10px
+    }
+
+    .hr-grid {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 540px;
+      font-family: var(--sans)
+    }
+
+    .hr-grid th,
+    .hr-grid td {
+      border: 1px solid var(--line);
+      text-align: center;
+      padding: 0
+    }
+
+    .hr-grid thead th {
+      background: var(--panel2);
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 9px 6px;
+      position: sticky;
+      top: 0
+    }
+
+    .hr-grid thead th.hrHourHead {
+      cursor: pointer;
+      user-select: none
+    }
+
+    .hr-grid thead th.hrHourHead:hover {
+      color: var(--ink)
+    }
+
+    .hr-grid td.hrName,
+    .hr-grid th.hrNameHead {
+      text-align: left;
+      padding: 8px 10px;
+      white-space: nowrap;
+      position: sticky;
+      left: 0;
+      background: var(--panel);
+      z-index: 1
+    }
+
+    .hr-grid thead th.hrNameHead {
+      background: var(--panel2);
+      z-index: 2
+    }
+
+    .hr-grid td.hrName {
+      cursor: pointer;
+      color: var(--ink);
+      font-size: 13px
+    }
+
+    .hr-grid td.hrName:hover {
+      color: var(--gold)
+    }
+
+    .hr-grid td.hrName .hrRoll {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--faint);
+      margin-right: 7px
+    }
+
+    .hr-grid td.hrRowSum {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      padding: 0 8px;
+      white-space: nowrap
+    }
+
+    .hr-cell {
+      width: 100%;
+      min-width: 46px;
+      height: 40px;
+      border: 0;
+      background: transparent;
+      color: var(--faint);
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: .04em
+    }
+
+    .hr-cell.p {
+      color: var(--green);
+      background: color-mix(in srgb, var(--green) 12%, transparent)
+    }
+
+    .hr-cell.a {
+      color: var(--red);
+      background: color-mix(in srgb, var(--red) 16%, transparent)
+    }
+
+    .hr-cell.o {
+      color: var(--gold);
+      background: color-mix(in srgb, var(--gold) 15%, transparent)
+    }
+
+    .hr-cell:focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: -2px
+    }
+
+    .hr-grid tbody tr:nth-child(even) td.hrName {
+      background: var(--panel2)
+    }
   </style>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
@@ -3927,6 +4155,8 @@
       <div class="cmd-nav">
         <button class="cmd-navbtn on" id="csLog" onclick="showCmdSec('log')">Log<span class="nc"
             id="csLogN">0</span></button>
+        <button class="cmd-navbtn" id="csHours" onclick="showCmdSec('hours')">Hours<span class="nc"
+            id="csHoursN">0</span></button>
         <button class="cmd-navbtn" id="csReport" onclick="showCmdSec('report')">Report</button>
         <button class="cmd-navbtn" id="csTerm" onclick="showCmdSec('term')">Term</button>
       </div>
@@ -4039,10 +4269,10 @@
               </div>
               <div class="row r2">
                 <div><label>Report date</label><input type="date" id="pDate"></div>
-                <div><label>Class / file code</label><input type="text" id="pClass" value="BscAero-IIA"></div>
+                <div><label>Class / file code</label><input type="text" id="pClass" value="BCA-CloudComputing"></div>
               </div>
               <div class="row r2">
-                <div><label>Program name (for message)</label><input type="text" id="pProg" value="Bsc Aero - IIA">
+                <div><label>Program name (for message)</label><input type="text" id="pProg" value="BCA Cloud Computing">
                 </div>
                 <div><label>&nbsp;</label>
                   <div style="font-family:var(--mono);font-size:9.5px;color:var(--faint);padding:11px 0">USED IN THE
@@ -4188,6 +4418,46 @@
           <div class="trk-list" id="trkList"></div>
           <div class="trk-note">GOLD BAR = DETENTION &middot; RED = CONDONATION (THRESHOLDS SET ABOVE) &middot; TAP A
             NAME FOR DATES &amp; LETTER. % IS BASED ON LOGGED ABSENCES ACROSS SAVED REPORTS + TODAY.</div>
+        </div>
+      </div>
+
+      <!-- ═══ SECTION: HOURS (per-hour manual attendance) ═══ -->
+      <div class="cmd-sec" id="secHours">
+        <div class="card2">
+          <div class="c2h"><span class="dot"></span>
+            <h3>Hour-by-hour attendance</h3><span class="c2sub">6 periods a day · mark each student per hour</span>
+          </div>
+
+          <div class="hr-toolbar">
+            <div class="hr-date">
+              <label>Day</label>
+              <input type="date" id="hrDate" onchange="onHourlyDateChange()">
+              <button class="btn line hr-todaybtn" onclick="hourlyToday()">Today</button>
+            </div>
+            <div class="hr-legend">
+              <span class="hr-key hp">P Present</span>
+              <span class="hr-key ha">A Absent</span>
+              <span class="hr-key ho">OD On&nbsp;Duty</span>
+            </div>
+          </div>
+
+          <div class="hr-bulk">
+            <button class="btn line" onclick="hourlyMarkAll('P')">All present</button>
+            <button class="btn line" onclick="hourlyMarkAll('A')">All absent</button>
+            <label class="btn line hr-filelbl">📤 Upload hourly CSV
+              <input type="file" accept=".csv,text/csv" onchange="importHourlyCSV(this)" style="display:none"></label>
+            <button class="btn line" onclick="exportHourlyExcel()">⬇ Export Excel (.xls)</button>
+            <button class="btn line" onclick="exportHourlyCSV()">⬇ Export CSV</button>
+            <button class="btn" onclick="applyHourlyToLog()">↪ Push absences to today's log</button>
+          </div>
+
+          <div class="hr-stat" id="hrStat"></div>
+          <div class="hr-gridwrap">
+            <table class="hr-grid" id="hrGrid"></table>
+          </div>
+          <div class="trk-note">TAP A CELL TO CYCLE PRESENT → ABSENT → ON&nbsp;DUTY. TAP AN HOUR HEADER OR A STUDENT NAME
+            TO FILL A WHOLE COLUMN / ROW. ON&nbsp;DUTY COUNTS AS PRESENT. THIS GRID SYNCS TO EVERY DEVICE VIA CLOUD
+            SYNC, AND CAN BE PUSHED INTO TODAY'S ABSENTEE LOG FOR THE REPORT.</div>
         </div>
       </div>
 
@@ -4425,15 +4695,26 @@
       return false;
     }
 
+    // Exclude the non-Cloud-Computing (aero) batch from any saved data.
+    const EXCLUDE_REGS = new Set(["23153145", "25153101", "25153102", "25153103", "25153104", "25153105", "25153107", "25153109", "25153110", "25153111", "25153112", "25153113", "25153114", "25153115", "25153116", "25153117", "25153118", "25153119", "25153120", "25153121", "25153122", "25153123", "25153124", "25153125", "25153126", "25153127", "25153128", "25153129", "25153130", "25153131", "25153132", "25153133", "25153134", "25153135", "25153136", "25153137", "25153138", "25153139", "25153140", "25153141", "25153142", "25153143", "25153144"]);
+    const EXCLUDE_NAMES = new Set(["ABINAYA S", "ADHITYA K", "AKSHAYA G", "ALBERT JANA J", "ANJANA M V", "BHAKTHI G NICHANI", "DIBYAJYOTHI SUMAN BARMAN", "DURGA M", "FAKRUDIN T DHARWAD", "FASNA V SHIHAB", "GAYATHRI G", "GOKUL LIWA S", "GUNGUN TAMBOLI", "HANA FATHIMA K M", "JEEVAN NISANTH K", "JOYEL FELIX H", "KANISHKA S", "KEVIN FRANCIS C R", "LENA FATAHIMA BASHEER", "M ROSHNI", "MATHUMITHA M", "MITHUNESH S", "MOHAMED SAMEE J", "MOHAMMED FAIZUDEEN S", "MOHANNED", "MUNAFARSHARIF S", "NISHAANTH S U", "NITHIN R", "NIVIN M", "RAKESH S", "RAKSHA NIVASINI", "RINO M REJI", "ROSHAN JERALD", "S MANASSEH PAUL", "SABARINATHAN R", "SAI VISHNU A", "SAISARAN S", "SRADHA MANOJ", "SYED AHAMED M N", "VENKATESAN S", "VIJAY S", "VUPPU BHAVASRI", "YESWANTHSIVA R"]);
+    function _normEx(x){ return String(x).replace(/\./g,' ').replace(/\s+/g,' ').trim().toUpperCase(); }
+    function isExcludedStudent(o){
+      if(!o) return false;
+      if(typeof o==='string') return EXCLUDE_NAMES.has(_normEx(o));
+      if(o.reg && EXCLUDE_REGS.has(String(o.reg).trim())) return true;
+      if(o.name && EXCLUDE_NAMES.has(_normEx(o.name))) return true;
+      return false;
+    }
     function sanitizeState(st) {
       if (!st) return st;
-      if (Array.isArray(st.roster)) st.roster = st.roster.filter(n => !isLogOrUUID(n));
-      if (Array.isArray(st.classRoster)) st.classRoster = st.classRoster.filter(r => r && !isLogOrUUID(r.name));
-      if (Array.isArray(st.absentees)) st.absentees = st.absentees.filter(a => a && !isLogOrUUID(a.name));
+      if (Array.isArray(st.roster)) st.roster = st.roster.filter(n => !isLogOrUUID(n) && !isExcludedStudent(n));
+      if (Array.isArray(st.classRoster)) st.classRoster = st.classRoster.filter(r => r && !isLogOrUUID(r.name) && !isExcludedStudent(r));
+      if (Array.isArray(st.absentees)) st.absentees = st.absentees.filter(a => a && !isLogOrUUID(a.name) && !isExcludedStudent(a));
       if (Array.isArray(st.history)) {
         st.history.forEach(h => {
           if (h && Array.isArray(h.absentees)) {
-            h.absentees = h.absentees.filter(a => a && !isLogOrUUID(a.name));
+            h.absentees = h.absentees.filter(a => a && !isLogOrUUID(a.name) && !isExcludedStudent(a));
           }
         });
       }
@@ -4644,6 +4925,7 @@
       P.forEach(k => { if (k !== 'pDate' && S.params && S.params[k] != null) $(k).value = S.params[k]; });
       if (S.od != null) $('mOD').value = S.od;
       render(); if (typeof renderMsg === 'function') renderMsg();
+      { const hs = document.getElementById('secHours'); if (hs && hs.classList.contains('on') && typeof renderHourly === 'function') renderHourly(); }
     }
     async function cloudPull(silent) {
       if (!syncOn()) return; setSync('Syncing…', 'busy');
@@ -5005,7 +5287,7 @@
     function renderPaper() {
       {
         const _i = ($('pDate').value || new Date().toISOString().slice(0, 10)).split('-');
-        const _c = (($('pClass') && $('pClass').value) || 'BscAero-IIA').trim().replace(/([a-z])([A-Z])/g, '$1_$2').toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/^_|_$/g, '');
+        const _c = (($('pClass') && $('pClass').value) || 'BCA-CloudComputing').trim().replace(/([a-z])([A-Z])/g, '$1_$2').toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/^_|_$/g, '');
         const fn = _c + ' ' + _i[2] + '-' + _i[1] + '-' + (_i[0] || '').slice(2) + '.docx';
         if ($('fileName')) $('fileName').textContent = fn;
         if ($('fileName2')) $('fileName2').textContent = fn;
@@ -5229,10 +5511,10 @@
         const date = (h.params && h.params.pDate) || (h.at ? new Date(h.at).toISOString().slice(0, 10) : null) || h.file;
         if (!inTerm(date)) return;
         const strength = +(h.params && h.params.pStrength) || 0;
-        byDate.set(date, { date, strength, absentees: h.absentees || [] });
+        byDate.set(date, { date, strength, absentees: (h.absentees || []).filter(a => !isExcludedStudent(a)) });
       });
       const cur = $('pDate').value;
-      if (cur && inTerm(cur)) byDate.set(cur, { date: cur, strength: +$('pStrength').value || 0, absentees: S.absentees || [] });
+      if (cur && inTerm(cur)) byDate.set(cur, { date: cur, strength: +$('pStrength').value || 0, absentees: (S.absentees || []).filter(a => !isExcludedStudent(a)) });
       return [...byDate.values()].sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
     }
     function weekdayOf(iso) { if (!/^\d{4}-\d{2}-\d{2}/.test(iso)) return -1; const [y, m, d] = iso.split('-').map(Number); return new Date(y, m - 1, d).getDay(); }
@@ -5286,7 +5568,7 @@
         const streak = trailingStreak(r, order);
         const recover = flag === 'ok' ? 0 : classesToReach(r.absent, held, _th.det);
         return Object.assign({}, r, { held, pct, flag, streak, recover });
-      }).sort((a, b) => a.pct - b.pct || b.absent - a.absent || a.name.localeCompare(b.name));
+      }).filter(r => !isExcludedStudent({ name: r.name })).sort((a, b) => a.pct - b.pct || b.absent - a.absent || a.name.localeCompare(b.name));
       return { held, days, rows, dow };
     }
     function trendSVG(days) {
@@ -5605,6 +5887,319 @@
         input.value = '';
       };
       rd.readAsText(f);
+    }
+
+    /* ═══════════════ HOUR-BY-HOUR MANUAL ATTENDANCE ═══════════════ */
+    /* Model: S.hourly[date][studentName] = ['P','A','OD', …] one entry per hour.
+       A day that has never been touched starts everyone Present (mark exceptions).
+       Lives inside S, so save() → cloudPush() carries it to every device automatically. */
+    const HR_HOURS = 6;
+    const HR_ORDER = { 'P': 'A', 'A': 'OD', 'OD': 'P' };   // tap cycle
+    let hourlyDate = null;
+
+    function hrRoster() {
+      const r = (Array.isArray(window.ROSTER) ? window.ROSTER : ROSTER) || [];
+      return r.filter(s => s && s.name && !isLogOrUUID(s.name))
+        .slice().sort((a, b) => (+a.n || 0) - (+b.n || 0));
+    }
+
+    function ensureHourly(date) {
+      if (!S.hourly) S.hourly = {};
+      if (!S.hourly[date]) {
+        const day = {};
+        hrRoster().forEach(s => { day[s.name] = Array(HR_HOURS).fill('P'); });
+        S.hourly[date] = day;
+      } else {
+        // keep the grid in step with roster edits without wiping existing marks
+        const day = S.hourly[date];
+        hrRoster().forEach(s => {
+          if (!Array.isArray(day[s.name])) day[s.name] = Array(HR_HOURS).fill('P');
+          else if (day[s.name].length < HR_HOURS)
+            while (day[s.name].length < HR_HOURS) day[s.name].push('P');
+        });
+      }
+      return S.hourly[date];
+    }
+
+    function hrCurDate() { return hourlyDate || (hourlyDate = today()); }
+
+    function onHourlyDateChange() {
+      const v = $('hrDate') && $('hrDate').value;
+      hourlyDate = v || today();
+      renderHourly();
+    }
+    function hourlyToday() { hourlyDate = today(); if ($('hrDate')) $('hrDate').value = hourlyDate; renderHourly(); }
+
+    function hourlyStats(date) {
+      const day = ensureHourly(date);
+      const perHour = Array.from({ length: HR_HOURS }, () => ({ p: 0, a: 0, o: 0 }));
+      let fullAbs = 0;
+      hrRoster().forEach(s => {
+        const row = day[s.name] || [];
+        let allAbs = true;
+        for (let h = 0; h < HR_HOURS; h++) {
+          const v = row[h] || 'P';
+          if (v === 'A') perHour[h].a++;
+          else if (v === 'OD') perHour[h].o++;
+          else perHour[h].p++;
+          if (v !== 'A') allAbs = false;
+        }
+        if (allAbs) fullAbs++;
+      });
+      return { perHour, fullAbs, total: hrRoster().length };
+    }
+
+    function renderHourly() {
+      const grid = $('hrGrid'); if (!grid) return;
+      const date = hrCurDate();
+      if ($('hrDate')) $('hrDate').value = date;
+      const day = ensureHourly(date);
+      const roster = hrRoster();
+
+      let head = '<thead><tr><th class="hrNameHead">Student</th>';
+      for (let h = 0; h < HR_HOURS; h++)
+        head += `<th class="hrHourHead" title="Tap to fill this hour" onclick="hourlyFillHour(${h})">Hr ${h + 1}</th>`;
+      head += '<th>P/A/OD</th></tr></thead>';
+
+      let body = '<tbody>';
+      roster.forEach(s => {
+        const row = day[s.name] || Array(HR_HOURS).fill('P');
+        let p = 0, a = 0, o = 0;
+        let cells = '';
+        for (let h = 0; h < HR_HOURS; h++) {
+          const v = row[h] || 'P';
+          const cls = v === 'A' ? 'a' : v === 'OD' ? 'o' : 'p';
+          const lbl = v === 'OD' ? 'OD' : v;
+          if (v === 'A') a++; else if (v === 'OD') o++; else p++;
+          cells += `<td><button class="hr-cell ${cls}" onclick="hourlyCycle('${esc(s.name).replace(/'/g, "\\'")}',${h})" title="Tap to change">${lbl}</button></td>`;
+        }
+        const roll = s.n != null ? `<span class="hrRoll">${esc(String(s.n))}</span>` : '';
+        body += `<tr><td class="hrName" title="Tap to fill this student's whole row" onclick="hourlyFillStudent('${esc(s.name).replace(/'/g, "\\'")}')">${roll}${esc(s.name)}</td>${cells}<td class="hrRowSum">${p} / ${a} / ${o}</td></tr>`;
+      });
+      body += '</tbody>';
+      grid.innerHTML = head + body;
+
+      // summary chips + nav badge
+      const st = hourlyStats(date);
+      const sc = $('hrStat');
+      if (sc) {
+        const totalP = st.perHour.reduce((n, x) => n + x.p, 0);
+        const totalA = st.perHour.reduce((n, x) => n + x.a, 0);
+        const totalO = st.perHour.reduce((n, x) => n + x.o, 0);
+        sc.innerHTML =
+          `<span class="hr-chip">${fmtDatePretty ? fmtDatePretty(date) : date}</span>` +
+          `<span class="hr-chip">Students <b>${st.total}</b></span>` +
+          `<span class="hr-chip">Full-day absent <b>${st.fullAbs}</b></span>` +
+          st.perHour.map((x, i) => `<span class="hr-chip">Hr ${i + 1} <b>${x.p}</b>P · <b>${x.a}</b>A · <b>${x.o}</b>OD</span>`).join('');
+      }
+      const badge = $('csHoursN');
+      if (badge) { const anyAbs = st.perHour.reduce((n, x) => n + x.a + x.o, 0); badge.textContent = anyAbs; }
+    }
+
+    function hourlyCycle(name, h) {
+      const date = hrCurDate();
+      const day = ensureHourly(date);
+      if (!Array.isArray(day[name])) day[name] = Array(HR_HOURS).fill('P');
+      const cur = day[name][h] || 'P';
+      day[name][h] = HR_ORDER[cur] || 'P';
+      save();
+      renderHourly();
+    }
+    function hourlyFillHour(h) {
+      const date = hrCurDate();
+      const day = ensureHourly(date);
+      // cycle the column as a whole: if everyone already A → OD → P → A
+      const roster = hrRoster();
+      const vals = roster.map(s => (day[s.name] || [])[h] || 'P');
+      const allSame = vals.every(v => v === vals[0]);
+      const next = allSame ? (HR_ORDER[vals[0]] || 'A') : 'A';
+      roster.forEach(s => { if (!Array.isArray(day[s.name])) day[s.name] = Array(HR_HOURS).fill('P'); day[s.name][h] = next; });
+      save(); renderHourly();
+    }
+    function hourlyFillStudent(name) {
+      const date = hrCurDate();
+      const day = ensureHourly(date);
+      if (!Array.isArray(day[name])) day[name] = Array(HR_HOURS).fill('P');
+      const allSame = day[name].every(v => v === day[name][0]);
+      const next = allSame ? (HR_ORDER[day[name][0]] || 'A') : 'A';
+      day[name] = Array(HR_HOURS).fill(next);
+      save(); renderHourly();
+    }
+    function hourlyMarkAll(val) {
+      const date = hrCurDate();
+      const day = ensureHourly(date);
+      hrRoster().forEach(s => { day[s.name] = Array(HR_HOURS).fill(val); });
+      save(); renderHourly();
+      if (typeof toast === 'function') toast('All marked ' + (val === 'A' ? 'absent' : val === 'OD' ? 'on duty' : 'present') + ' for every hour');
+    }
+
+    /* Push the hourly grid into the day-level absentee log so the Report/DOCX/Term
+       tracker reflect it. Rule (shown to the user): OD in any hour → On Duty;
+       else Absent in any hour → Unauthorized, remark lists which hours. Only students
+       Present in all 6 hours are left off. Applies to today's log only. */
+    function applyHourlyToLog() {
+      const date = hrCurDate();
+      const t = today();
+      if (date !== t) {
+        if (!confirm('The grid is showing ' + (fmtDatePretty ? fmtDatePretty(date) : date) +
+          ', not today. Push that day into today\u2019s log anyway?')) return;
+      }
+      const day = ensureHourly(date);
+      let added = 0, updated = 0;
+      if (typeof pushUndo === 'function') pushUndo();
+      hrRoster().forEach(s => {
+        const row = day[s.name] || [];
+        const odHrs = [], absHrs = [];
+        for (let h = 0; h < HR_HOURS; h++) {
+          if (row[h] === 'OD') odHrs.push(h + 1);
+          else if (row[h] === 'A') absHrs.push(h + 1);
+        }
+        if (!odHrs.length && !absHrs.length) return; // present all day
+        const status = odHrs.length ? 'od' : 'unauthorized';
+        const remark = odHrs.length
+          ? ('On duty — hour' + (odHrs.length > 1 ? 's ' : ' ') + odHrs.join(', ') + (absHrs.length ? '; absent hour' + (absHrs.length > 1 ? 's ' : ' ') + absHrs.join(', ') : ''))
+          : ('Absent — hour' + (absHrs.length > 1 ? 's ' : ' ') + absHrs.join(', '));
+        const ro = hrRoster().find(x => x.name === s.name) || {};
+        const existing = S.absentees.find(a => a.name.trim().toLowerCase() === s.name.toLowerCase());
+        if (existing) { existing.status = status; existing.remark = remark; updated++; }
+        else {
+          S.absentees.push({ name: s.name, status, reason: '', remark, reg: ro.reg, ph: ro.ph, pa: ro.pa });
+          if (!S.roster.includes(s.name)) S.roster.push(s.name);
+          added++;
+        }
+      });
+      save();
+      if (typeof render === 'function') render();
+      if (typeof toast === 'function') toast(added + ' added, ' + updated + ' updated in today\u2019s log');
+    }
+
+    /* CSV import — header row then Name,Hr1..Hr6 (P / A / OD, or 1 / 0, or present/absent). */
+    function hrNorm(v) {
+      const t = String(v == null ? '' : v).trim().toUpperCase();
+      if (!t) return 'P';
+      if (t === 'OD' || t === 'O' || t === 'ON DUTY' || t === 'DUTY') return 'OD';
+      if (t === 'A' || t === '0' || t === 'ABSENT' || t === 'AB') return 'A';
+      return 'P';
+    }
+    function importHourlyCSV(input) {
+      const f = input.files && input.files[0]; if (!f) return; const rd = new FileReader();
+      rd.onload = () => {
+        try {
+          const lines = String(rd.result).split(/\r?\n/).filter(l => l.trim());
+          if (lines.length < 2) throw new Error('Empty');
+          const date = hrCurDate();
+          const day = ensureHourly(date);
+          let matched = 0;
+          lines.slice(1).forEach(line => {
+            const cols = _parseCSV(line);
+            if (!cols.length) return;
+            let idx = 0;
+            // if first column looks like a date, skip it
+            if (cols[0] && cols[0].length === 10 && cols[0].charAt(4) === '-') idx = 1;
+            const name = cols[idx];
+            if (!name) return;
+            const ro = hrRoster().find(r => r.name.toLowerCase() === name.toLowerCase());
+            const finalName = ro ? ro.name : name;
+            if (!ro) return; // only accept known students to avoid junk rows
+            const row = Array(HR_HOURS).fill('P');
+            for (let h = 0; h < HR_HOURS; h++) row[h] = hrNorm(cols[idx + 1 + h]);
+            day[finalName] = row;
+            matched++;
+          });
+          save(); renderHourly();
+          if (typeof toast === 'function') toast(matched + ' students imported into the hourly grid');
+        } catch (e) { if (typeof toast === 'function') toast('Could not read that CSV'); }
+        input.value = '';
+      };
+      rd.readAsText(f);
+    }
+
+    function hrRows(date) {
+      const day = ensureHourly(date);
+      return hrRoster().map(s => {
+        const row = day[s.name] || Array(HR_HOURS).fill('P');
+        let p = 0, a = 0, o = 0;
+        const hrs = [];
+        for (let h = 0; h < HR_HOURS; h++) {
+          const v = row[h] || 'P'; hrs.push(v === 'OD' ? 'OD' : v);
+          if (v === 'A') a++; else if (v === 'OD') o++; else p++;
+        }
+        const pct = HR_HOURS ? Math.round(((p + o) / HR_HOURS) * 100) : 0; // OD counts present
+        return { n: s.n || '', reg: s.reg || '', name: s.name, hrs, p, a, o, pct };
+      });
+    }
+    function exportHourlyCSV() {
+      const date = hrCurDate();
+      const head = ['Date', 'Roll No', 'Register No', 'Name',
+        ...Array.from({ length: HR_HOURS }, (_, i) => 'Hr ' + (i + 1)),
+        'Present', 'Absent', 'On Duty', 'Attendance %'];
+      const rows = hrRows(date).map(r => [date, r.n, r.reg, r.name, ...r.hrs, r.p, r.a, r.o, r.pct + '%']);
+      const csv = [head, ...rows].map(row => row.map(csvCell).join(',')).join('\r\n');
+      const cls = ($('pClass') && $('pClass').value || 'ARGUS').trim();
+      downloadBlob(csv, cls + '_hourly_' + date + '.csv', 'text/csv');
+      if (typeof toast === 'function') toast('Hourly CSV exported');
+    }
+
+    /* Real Excel file with zero dependencies: SpreadsheetML 2003 (.xls) — Excel,
+       Numbers, LibreOffice and Google Sheets all open it natively. */
+    function xlsEsc(v) {
+      return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    function exportHourlyExcel() {
+      const date = hrCurDate();
+      const cls = ($('pClass') && $('pClass').value || 'ARGUS').trim();
+      const rows = hrRows(date);
+      const st = hourlyStats(date);
+
+      const head = ['Roll No', 'Register No', 'Name',
+        ...Array.from({ length: HR_HOURS }, (_, i) => 'Hr ' + (i + 1)),
+        'Present', 'Absent', 'On Duty', 'Attendance %'];
+
+      const cell = (v, type) => {
+        const t = type || (typeof v === 'number' ? 'Number' : 'String');
+        return `<Cell><Data ss:Type="${t}">${xlsEsc(v)}</Data></Cell>`;
+      };
+      const headCell = v => `<Cell ss:StyleID="h"><Data ss:Type="String">${xlsEsc(v)}</Data></Cell>`;
+      const rowXml = cells => `<Row>${cells}</Row>`;
+
+      let dataRows = rows.map(r => {
+        const cs = [cell(r.n), cell(r.reg, 'String'), cell(r.name)]
+          .concat(r.hrs.map(h => {
+            const sid = h === 'A' ? 'a' : h === 'OD' ? 'o' : 'p';
+            return `<Cell ss:StyleID="${sid}"><Data ss:Type="String">${xlsEsc(h)}</Data></Cell>`;
+          }))
+          .concat([cell(r.p), cell(r.a), cell(r.o), cell(r.pct / 100, 'Number')]);
+        return rowXml(cs.join(''));
+      }).join('');
+
+      const titleRow = rowXml(`<Cell ss:StyleID="t" ss:MergedAcross="${head.length - 1}"><Data ss:Type="String">${xlsEsc(cls + '  —  Hour-by-hour attendance  —  ' + (fmtDatePretty ? fmtDatePretty(date) : date))}</Data></Cell>`);
+      const headRow = rowXml(head.map(headCell).join(''));
+
+      // per-hour summary block
+      const sumHead = rowXml(['', '', 'Per-hour totals', ...Array.from({ length: HR_HOURS }, (_, i) => 'Hr ' + (i + 1))].map(headCell).join(''));
+      const sumP = rowXml([cell(''), cell(''), cell('Present')].concat(st.perHour.map(x => cell(x.p))).join(''));
+      const sumA = rowXml([cell(''), cell(''), cell('Absent')].concat(st.perHour.map(x => cell(x.a))).join(''));
+      const sumO = rowXml([cell(''), cell(''), cell('On Duty')].concat(st.perHour.map(x => cell(x.o))).join(''));
+
+      const xml =
+        '<?xml version="1.0"?>\n' +
+        '<?mso-application progid="Excel.Sheet"?>\n' +
+        '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" ' +
+        'xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">\n' +
+        '<Styles>' +
+        '<Style ss:ID="t"><Font ss:Bold="1" ss:Size="13"/><Alignment ss:Horizontal="Center"/></Style>' +
+        '<Style ss:ID="h"><Font ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#1F4E79" ss:Pattern="Solid"/><Alignment ss:Horizontal="Center"/></Style>' +
+        '<Style ss:ID="p"><Interior ss:Color="#E2F0E6" ss:Pattern="Solid"/><Alignment ss:Horizontal="Center"/></Style>' +
+        '<Style ss:ID="a"><Font ss:Color="#C00000" ss:Bold="1"/><Interior ss:Color="#FADBD6" ss:Pattern="Solid"/><Alignment ss:Horizontal="Center"/></Style>' +
+        '<Style ss:ID="o"><Font ss:Color="#8A6100" ss:Bold="1"/><Interior ss:Color="#FBEFD3" ss:Pattern="Solid"/><Alignment ss:Horizontal="Center"/></Style>' +
+        '</Styles>\n' +
+        '<Worksheet ss:Name="' + xlsEsc(date) + '"><Table>' +
+        titleRow + headRow + dataRows +
+        rowXml('') + sumHead + sumP + sumA + sumO +
+        '</Table></Worksheet></Workbook>';
+
+      downloadBlob(xml, cls + '_hourly_' + date + '.xls', 'application/vnd.ms-excel');
+      if (typeof toast === 'function') toast('Excel file exported');
     }
 
     /* ═══════════════ ROSTER CSV IMPORT/EXPORT ═══════════════ */
@@ -5934,11 +6529,11 @@
         styles: { default: { document: { run: { font: FONT, size: SZ } } } },
         sections: [{ properties: { page: { margin: { top: 1152, bottom: 1152, left: 1440, right: 1440 } } }, children: kids }]
       });
-      // Filename: "BSC_AERO_IIA 31-07-26.docx" (class code + DD-MM-YY).
+      // Filename: "BCA_CLOUD_COMPUTING 31-07-26.docx" (class code + DD-MM-YY).
       // '/' is illegal in filenames, so the date uses '-' while keeping the requested order.
       const _iso = (d.date || new Date().toISOString().slice(0, 10)).split('-'); // [YYYY,MM,DD]
       const _dd = _iso[2], _mm = _iso[1], _yy = (_iso[0] || '').slice(2);
-      const _code = (($('pClass') && $('pClass').value) || 'BscAero-IIA').trim().replace(/([a-z])([A-Z])/g, '$1_$2').toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/^_|_$/g, '');
+      const _code = (($('pClass') && $('pClass').value) || 'BCA-CloudComputing').trim().replace(/([a-z])([A-Z])/g, '$1_$2').toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/^_|_$/g, '');
       const file = _code + ' ' + _dd + '-' + _mm + '-' + _yy + '.docx';
       docx.Packer.toBlob(doc).then(blob => { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = file; a.click(); toast('Downloaded ' + file); });
     }
@@ -5980,13 +6575,14 @@
 
     /* Command sub-sections (Log / Report / Term) */
     function showCmdSec(which) {
-      ['log', 'report', 'term'].forEach(k => {
+      ['log', 'report', 'term', 'hours'].forEach(k => {
         const cap = k.charAt(0).toUpperCase() + k.slice(1);
         const sec = document.getElementById('sec' + cap); if (sec) sec.classList.toggle('on', k === which);
         const btn = document.getElementById('cs' + cap); if (btn) btn.classList.toggle('on', k === which);
       });
       // re-render the preview for whichever section is now visible
       if (typeof renderPaper === 'function') renderPaper();
+      if (which === 'hours' && typeof renderHourly === 'function') renderHourly();
     }
 
     function showLaSub(which) {
