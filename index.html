@@ -5420,11 +5420,23 @@
     }
 
     /* ═══════════════ QUICK ROSTER ═══════════════ */
+    window.clearRosterLogs = function() {
+      if (!confirm('Clear all log entries (UUIDs) from the roster?')) return;
+      S.roster = (S.roster || []).filter(n => {
+        const str = n.trim();
+        return !(str.length > 25 && str.includes('-') && !str.includes(' '));
+      });
+      save();
+      render();
+    };
     function renderQuick() {
       const el = $('quickRoster'); if (!el) return;
       const logged = new Set(S.absentees.map(a => a.name.trim()));
       const names = (S.roster || []).filter(n => !logged.has(n.trim()));
-      el.innerHTML = names.length ? `<div class="quick-lab">Quick add from roster · one tap = informed absence</div><div class="quick-chips">${names.map(n => `<button class="quick-chip" data-name="${esc(n)}">+ ${esc(n)}</button>`).join('')}</div>` : '';
+      el.innerHTML = names.length ? `<div class="quick-lab" style="display:flex; justify-content:space-between; align-items:center;">
+        <span>Quick add from roster · one tap = informed absence</span>
+        <button class="btn" style="padding:2px 8px; font-size:0.8rem; background:transparent; border:1px solid #555; color:#ccc; border-radius:4px; cursor:pointer;" onclick="clearRosterLogs()">Clear Logs</button>
+      </div><div class="quick-chips">${names.map(n => `<button class="quick-chip" data-name="${esc(n)}">+ ${esc(n)}</button>`).join('')}</div>` : '';
     }
     function quickAdd(name) { if (!name) return; pushUndo(); S.absentees.push({ name, status: 'informed', reason: '', remark: DEF_REMARK('informed') }); if (!S.roster.includes(name)) S.roster.push(name); save(); render(); toast(name + ' logged (informed)'); }
 
