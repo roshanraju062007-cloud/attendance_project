@@ -3985,11 +3985,15 @@
               <div id="contact" class="contact"></div>
               <div class="kbdhint"><b>N</b> filter · type a name, then <b>A</b>uth / <b>U</b>nauth / <b>O</b>D /
                 <b>G</b>rooming / <b>S</b>uspended sets status &amp; picks · then a reason letter (repeat to cycle) →
-                <b>Enter</b> adds · <b>?</b> all shortcuts</div>
+                <b>Enter</b> adds · <b>?</b> all shortcuts
+              </div>
               <button class="btn" onclick="addAbsentee()">Add to today's log &nbsp;↵</button>
               <div style="display:flex; gap:8px; margin-top:8px;">
                 <button class="btn scanbtn" style="flex:1" onclick="openScan()">📷 Scan register</button>
-                <label class="btn scanbtn" style="flex:1; cursor:pointer; display:flex; align-items:center; justify-content:center; margin:0">📤 Upload Today's CSV<input type="file" accept=".csv,text/csv" onchange="importTodayCSV(this)" style="display:none"></label>
+                <label class="btn scanbtn"
+                  style="flex:1; cursor:pointer; display:flex; align-items:center; justify-content:center; margin:0">📤
+                  Upload Today's CSV<input type="file" accept=".csv,text/csv" onchange="importTodayCSV(this)"
+                    style="display:none"></label>
               </div>
               <div class="quick" id="quickRoster"></div>
             </div>
@@ -4167,11 +4171,17 @@
             <button class="btn line" style="grid-column:1 / -1" onclick="openRoster()">✎ Edit class roster &amp; phone
               numbers</button>
             <div style="grid-column:1 / -1; display:flex; gap:8px;">
-              <label class="btn line" style="flex:1; cursor:pointer;text-align:center;display:flex;align-items:center;justify-content:center;margin:0">Import Roster CSV<input type="file" accept=".csv,text/csv" onchange="importRosterCSV(this)" style="display:none"></label>
+              <label class="btn line"
+                style="flex:1; cursor:pointer;text-align:center;display:flex;align-items:center;justify-content:center;margin:0">Import
+                Roster CSV<input type="file" accept=".csv,text/csv" onchange="importRosterCSV(this)"
+                  style="display:none"></label>
               <button class="btn line" style="flex:1" onclick="exportRosterCSV()">Export Roster CSV</button>
             </div>
             <div style="grid-column:1 / -1; display:flex; gap:8px;">
-              <label class="btn line" style="flex:1; cursor:pointer;text-align:center;display:flex;align-items:center;justify-content:center;margin:0">Import History CSV<input type="file" accept=".csv,text/csv" onchange="importHistoryCSV(this)" style="display:none"></label>
+              <label class="btn line"
+                style="flex:1; cursor:pointer;text-align:center;display:flex;align-items:center;justify-content:center;margin:0">Import
+                History CSV<input type="file" accept=".csv,text/csv" onchange="importHistoryCSV(this)"
+                  style="display:none"></label>
               <button class="btn line" style="flex:1" onclick="exportHistoryCSV()">Export History CSV</button>
             </div>
           </div>
@@ -4405,8 +4415,37 @@
     const today = () => { const n = new Date(); return new Date(n.getTime() - n.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); };
     const P = ['pDate', 'pClass', 'pProg', 'pStrength', 'pLate', 'pHalf', 'pBy', 'pTo', 'pSub'];
 
+    function isLogOrUUID(name) {
+      if (!name) return true;
+      const s = String(name).trim();
+      if (s.length > 18 && (s.includes('-') || s.includes('_')) && !s.includes(' ')) return true;
+      if (/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(s)) return true;
+      if (/^[0-9a-fA-F-]{20,}$/.test(s)) return true;
+      if (s.startsWith('-') || s.startsWith('log_') || s.startsWith('uuid_')) return true;
+      return false;
+    }
+
+    function sanitizeState(st) {
+      if (!st) return st;
+      if (Array.isArray(st.roster)) st.roster = st.roster.filter(n => !isLogOrUUID(n));
+      if (Array.isArray(st.classRoster)) st.classRoster = st.classRoster.filter(r => r && !isLogOrUUID(r.name));
+      if (Array.isArray(st.absentees)) st.absentees = st.absentees.filter(a => a && !isLogOrUUID(a.name));
+      if (Array.isArray(st.history)) {
+        st.history.forEach(h => {
+          if (h && Array.isArray(h.absentees)) {
+            h.absentees = h.absentees.filter(a => a && !isLogOrUUID(a.name));
+          }
+        });
+      }
+      if (typeof window !== 'undefined' && Array.isArray(window.ROSTER)) {
+        window.ROSTER = window.ROSTER.filter(r => r && !isLogOrUUID(r.name));
+      }
+      return st;
+    }
+
     function save() {
       S.params = Object.fromEntries(P.map(k => [k, $(k).value]));
+      sanitizeState(S);
       S._ts = Date.now();
       localStorage.setItem(KEY, JSON.stringify(S));
       cloudPush();
@@ -4415,6 +4454,7 @@
       try {
         const raw = localStorage.getItem(KEY);
         if (raw) S = Object.assign(S, JSON.parse(raw));
+        sanitizeState(S);
       } catch (e) { }
       P.forEach(k => {
         if (k === 'pDate') return;                       // the date is always today
@@ -4425,49 +4465,65 @@
 
     let lastDay = null;
     let ROSTER = [
-      { n: 1, reg: "25153101", name: "ABINAYA S", ph: "8072876279", pa: "8680090096" },
-      { n: 2, reg: "25153102", name: "ADHITYA K", ph: "9933265007", pa: "8972266792" },
-      { n: 3, reg: "25153103", name: "AKSHAYA G", ph: "7708513049", pa: "9952098145" },
-      { n: 4, reg: "25153104", name: "ALBERT JANA J", ph: "6385048665", pa: "9715909230" },
-      { n: 5, reg: "25153105", name: "ANJANA M V", ph: "8590581370", pa: "9995301555" },
-      { n: 6, reg: "25153107", name: "BHAKTHI G NICHANI", ph: "7498681254", pa: "9884295032" },
-      { n: 7, reg: "25153109", name: "DURGA M", ph: "8778483677", pa: "8056553583" },
-      { n: 8, reg: "25153110", name: "FAKRUDIN T DHARWAD", ph: "8792664302", pa: "9449964302" },
-      { n: 9, reg: "25153111", name: "FASNA .V .SHIHAB", ph: "9778742751", pa: "7736182904" },
-      { n: 10, reg: "25153112", name: "GAYATHRI G", ph: "9080700557", pa: "9092235349" },
-      { n: 11, reg: "25153113", name: "GOKUL LIWA S", ph: "8903766167", pa: "9444278467" },
-      { n: 12, reg: "25153114", name: "GUNGUN TAMBOLI", ph: "7999117247", pa: "9827174212" },
-      { n: 13, reg: "25153115", name: "HANA FATHIMA K M", ph: "9037461476", pa: "9847228278" },
-      { n: 14, reg: "25153116", name: "JEEVAN NISANTH K", ph: "9790796655", pa: "9952913747" },
-      { n: 15, reg: "25153117", name: "JOYEL FELIX H", ph: "9385577978", pa: "8608871978" },
-      { n: 16, reg: "25153118", name: "KANISHKA S", ph: "9342796598", pa: "8973454199" },
-      { n: 17, reg: "25153119", name: "KEVIN FRANCIS C R", ph: "9500676947", pa: "9962083779" },
-      { n: 18, reg: "25153120", name: "MATHUMITHA M", ph: "7200490407", pa: "9840863113" },
-      { n: 19, reg: "25153121", name: "MITHUNESH S", ph: "7092670206", pa: "9842133206" },
-      { n: 20, reg: "25153122", name: "MOHAMED SAMEE J", ph: "8838407130", pa: "8122855336" },
-      { n: 21, reg: "25153123", name: "M ROSHNI", ph: "9025896571", pa: "8903689497" },
-      { n: 22, reg: "25153124", name: "MUNAFARSHARIF S", ph: "7358201099", pa: "9487760676" },
-      { n: 23, reg: "25153125", name: "NITHIN R", ph: "9342532240", pa: "9750939432" },
-      { n: 24, reg: "25153126", name: "NIVIN M", ph: "9344836769", pa: "" },
-      { n: 25, reg: "25153127", name: "RAKESH S", ph: "9360065409", pa: "9790093016" },
-      { n: 26, reg: "25153128", name: "RAKSHA NIVASINI", ph: "7845789191", pa: "7845779192" },
-      { n: 27, reg: "25153129", name: "RINO M REJI", ph: "9846723677", pa: "9495114423" },
-      { n: 28, reg: "25153130", name: "ROSHAN JERALD", ph: "9902053328", pa: "9884176971" },
-      { n: 29, reg: "25153131", name: "SAISARAN S", ph: "7397305143", pa: "9789763664" },
-      { n: 30, reg: "25153132", name: "SAI VISHNU A", ph: "", pa: "" },
-      { n: 31, reg: "25153133", name: "S MANASSEH PAUL", ph: "9390586304", pa: "9676904233" },
-      { n: 32, reg: "25153134", name: "SRADHA MANOJ", ph: "8304905130", pa: "8848449418" },
-      { n: 33, reg: "25153135", name: "SYED AHAMED M N", ph: "7092525845", pa: "7845540490" },
-      { n: 34, reg: "25153136", name: "VENKATESAN S", ph: "7200024383", pa: "" },
-      { n: 35, reg: "25153137", name: "VIJAY S", ph: "8088622672", pa: "9448009403" },
-      { n: 36, reg: "25153138", name: "VUPPU BHAVASRI", ph: "7981936455", pa: "8639544767" },
-      { n: 37, reg: "25153139", name: "YESWANTHSIVA R", ph: "8939211275", pa: "9080614843" },
-      { n: 38, reg: "25153140", name: "LENA FATAHIMA BASHEER", ph: "7510882066", pa: "8606898494" },
-      { n: 39, reg: "25153141", name: "MOHAMMED FAIZUDEEN S", ph: "8838977579", pa: "9940286374" },
-      { n: 40, reg: "25153142", name: "NISHAANTH S U", ph: "9345441709", pa: "9841959003" },
-      { n: 41, reg: "25153143", name: "SABARINATHAN R", ph: "9025741421", pa: "9445169918" },
-      { n: 42, reg: "25153144", name: "DIBYAJYOTHI SUMAN BARMAN", ph: "9832617362", pa: "9832617362" },
-      { n: 43, reg: "23153145", name: "MOHANNED", ph: "8589868801", pa: "7356568890" },
+      { n: 1, reg: "25248101", name: "Aashritha KL", ph: "7845524545", pa: "9940535577" },
+      { n: 2, reg: "25248102", name: "M. Abhirami", ph: "9884122627", pa: "9551917173" },
+      { n: 3, reg: "25248103", name: "Abishan", ph: "7904250670", pa: "9786369772" },
+      { n: 4, reg: "25248104", name: "Adam Arafath Rasheed", ph: "8075127823", pa: "9995336430" },
+      { n: 5, reg: "25248105", name: "Annamalai L", ph: "8248329523", pa: "9841405832" },
+      { n: 6, reg: "25248106", name: "Antony Paul V", ph: "7305937139", pa: "7299991130" },
+      { n: 7, reg: "25248107", name: "Aravind D", ph: "9941836923", pa: "9941471535" },
+      { n: 8, reg: "25248108", name: "Atin Fosberry", ph: "9884485451", pa: "9840085451" },
+      { n: 9, reg: "25248109", name: "Bhuvaneshwari R", ph: "9445343627", pa: "8939804583" },
+      { n: 10, reg: "25248110", name: "Boomikesh R", ph: "9790978186", pa: "8148360206" },
+      { n: 11, reg: "25248111", name: "P. Deepikaa", ph: "9962582459", pa: "7418450955" },
+      { n: 12, reg: "25248112", name: "Fayaz Ahamed", ph: "9791257637", pa: "8754736355" },
+      { n: 13, reg: "25248113", name: "Gokul Krishna", ph: "9345540411", pa: "7871046666" },
+      { n: 14, reg: "25248114", name: "Halan Roch Kavidoss", ph: "8122452406", pa: "8122452406" },
+      { n: 15, reg: "25248115", name: "Hariharan M", ph: "6382704758", pa: "9841332367" },
+      { n: 16, reg: "25248116", name: "Harini K", ph: "9003610501", pa: "9003610501" },
+      { n: 17, reg: "25248117", name: "J. Harish", ph: "9342456153", pa: "9042505793" },
+      { n: 18, reg: "25248118", name: "Janani K", ph: "8807609905", pa: "9940636104" },
+      { n: 19, reg: "25248119", name: "Jeffy Joe J", ph: "9176070953", pa: "9176362563" },
+      { n: 20, reg: "25248120", name: "Jeresh J", ph: "8610233010", pa: "6380303074" },
+      { n: 21, reg: "25248121", name: "Karthikeyan", ph: "9150660232", pa: "9025736126" },
+      { n: 22, reg: "25248122", name: "T. Kaviarasu", ph: "8681941674", pa: "9994090934" },
+      { n: 23, reg: "25248123", name: "Kishore K", ph: "8428804909", pa: "8428804909" },
+      { n: 24, reg: "25248124", name: "Madeshwar P", ph: "9080161396", pa: "8778456610" },
+      { n: 25, reg: "25248125", name: "Madhumitha M", ph: "6383661442", pa: "9488939099" },
+      { n: 26, reg: "25248126", name: "M. Krithika", ph: "6379501587", pa: "9679566460" },
+      { n: 27, reg: "25248127", name: "Mohamed Rahman KS", ph: "7603871760", pa: "7603871760" },
+      { n: 28, reg: "25248128", name: "Mohammad Ashik J", ph: "7339445985", pa: "7339445985" },
+      { n: 29, reg: "25248129", name: "Naveen Kumar M", ph: "7339593878", pa: "9092488447" },
+      { n: 30, reg: "25248130", name: "Navinkumar", ph: "6374162067", pa: "7010636949" },
+      { n: 31, reg: "25248131", name: "Pradeesh G", ph: "9840583537", pa: "9840583537" },
+      { n: 32, reg: "25248132", name: "Prahaan Adi D", ph: "9940409400", pa: "9003129333" },
+      { n: 33, reg: "25248133", name: "Prathap P", ph: "7305679855", pa: "9655849566" },
+      { n: 34, reg: "25248134", name: "Raivathy S", ph: "6385578352", pa: "6381013445" },
+      { n: 35, reg: "25248135", name: "Rohinth", ph: "8778186758", pa: "9655783136" },
+      { n: 36, reg: "25248136", name: "Roshan G", ph: "6369406879", pa: "8778060937" },
+      { n: 37, reg: "25248137", name: "Sai Preethi G", ph: "9042566612", pa: "9841198365" },
+      { n: 38, reg: "25248138", name: "Sai Priyanka V", ph: "9962988922", pa: "9360833756" },
+      { n: 39, reg: "25248139", name: "Sanjay Kumar M", ph: "9087633919", pa: "9087633919" },
+      { n: 40, reg: "25248140", name: "Sariefa Parveen", ph: "9282116625", pa: "9500335853" },
+      { n: 41, reg: "25248141", name: "Saron Kumar", ph: "9361493935", pa: "8525864326" },
+      { n: 42, reg: "25248142", name: "K. Shanmugapriyan", ph: "7396470070", pa: "6369600062" },
+      { n: 43, reg: "25248143", name: "Suriya Prakash K", ph: "9342631072", pa: "6381193300" },
+      { n: 44, reg: "25248144", name: "Suriya S", ph: "7708772640", pa: "9344900669" },
+      { n: 45, reg: "25248145", name: "Tanisha Sunilkumar", ph: "7395911891", pa: "9207636915" },
+      { n: 46, reg: "25248146", name: "Thejus K", ph: "8610984307", pa: "9940229919" },
+      { n: 47, reg: "25248147", name: "M.M. Thilagaraj", ph: "7812873268", pa: "7812873268" },
+      { n: 48, reg: "25248148", name: "Thulasiram V", ph: "7825926084", pa: "9597202261" },
+      { n: 49, reg: "25248149", name: "Tushar Zavier", ph: "7550295595", pa: "9003036827" },
+      { n: 50, reg: "25248150", name: "A. Uma Makeshwari", ph: "9361429889", pa: "9952992895" },
+      { n: 51, reg: "25248151", name: "V. Deepak", ph: "9790256883", pa: "9790256883" },
+      { n: 52, reg: "25248152", name: "Vishnuprasad Balaraman", ph: "7550206852", pa: "8610644765" },
+      { n: 53, reg: "25248153", name: "S. Vishwa", ph: "8056900727", pa: "9952562738" },
+      { n: 54, reg: "25248154", name: "Vivek V Nair", ph: "8939500416", pa: "9043284271" },
+      { n: 55, reg: "25248155", name: "V. Pooja", ph: "9087550107", pa: "9940265010" },
+      { n: 56, reg: "25248156", name: "Lokeshwaran V", ph: "8825524317", pa: "9360105048" },
+      { n: 57, reg: "25248157", name: "M. Shuban", ph: "8682844061", pa: "9600006270" },
+      { n: 58, reg: "25248158", name: "Prajin Kumar S", ph: "8838124627", pa: "9380955550" },
+      { n: 59, reg: "25248159", name: "Sushmitha Rajam S", ph: "9345363141", pa: "9385555560" },
     ];
     const byName = n => ROSTER.find(r => r.name === n) || null;
     const REASONS = [
@@ -4602,7 +4658,7 @@
           if (!r.ok) throw new Error(r.status);
           d = await r.json();
         }
-        if (d && d._ts && d._ts > (S._ts || 0)) { S = Object.assign(S, d); localStorage.setItem(KEY, JSON.stringify(S)); rehydrate(); if (!silent) toast('Loaded latest from cloud'); }
+        if (d && d._ts && d._ts > (S._ts || 0)) { S = Object.assign(S, d); sanitizeState(S); localStorage.setItem(KEY, JSON.stringify(S)); rehydrate(); if (!silent) toast('Loaded latest from cloud'); }
         setSync('Synced · ' + hhmm(), 'ok');
       } catch (e) { setSync('Offline — using this device', 'warn'); }
     }
@@ -5429,12 +5485,13 @@
       return false;
     }
 
-    window.clearRosterLogs = function() {
-      if (!confirm('Clear all log entries (UUIDs) from the roster and current absentees list?')) return;
-      S.roster = (S.roster || []).filter(n => !isLogOrUUID(n));
-      S.absentees = (S.absentees || []).filter(a => !isLogOrUUID(a.name));
+    window.clearRosterLogs = function () {
+      if (!confirm('Clear all log entries (UUIDs) from local state & cloud?')) return;
+      sanitizeState(S);
+      S._ts = Date.now() + 5000;
       save();
       render();
+      if (typeof toast === 'function') toast('Roster logs cleared & synced to cloud');
     };
 
     function renderQuick() {
@@ -5516,35 +5573,35 @@
           if (lines.length < 2) throw new Error('Empty');
           let added = 0;
           lines.slice(1).forEach(line => {
-             const cols = _parseCSV(line);
-             let name = cols[0], status = cols[1], reason = cols[2], remark = cols[3];
-             // If first col looks like a date (YYYY-MM-DD), shift right
-             if (name && name.length === 10 && name.charAt(4) === '-') { 
-                name = cols[1]; status = cols[2]; reason = cols[3]; remark = cols[4];
-             }
-             if (!name || name === '(100% Attendance)' || status === 'held') return;
-             
-             const ro = (window.ROSTER || []).find(r => r.name.toLowerCase() === name.toLowerCase());
-             const finalName = ro ? ro.name : name;
-             
-             if (!S.absentees.find(a => a.name === finalName)) {
-                 S.absentees.push({ 
-                     name: finalName, 
-                     status: status || 'absent', 
-                     reason: reason || '', 
-                     remark: remark || (typeof DEF_REMARK === 'function' ? DEF_REMARK(status || 'absent') : '')
-                 });
-                 if (!S.roster.includes(finalName)) S.roster.push(finalName);
-                 added++;
-             }
+            const cols = _parseCSV(line);
+            let name = cols[0], status = cols[1], reason = cols[2], remark = cols[3];
+            // If first col looks like a date (YYYY-MM-DD), shift right
+            if (name && name.length === 10 && name.charAt(4) === '-') {
+              name = cols[1]; status = cols[2]; reason = cols[3]; remark = cols[4];
+            }
+            if (!name || name === '(100% Attendance)' || status === 'held') return;
+
+            const ro = (window.ROSTER || []).find(r => r.name.toLowerCase() === name.toLowerCase());
+            const finalName = ro ? ro.name : name;
+
+            if (!S.absentees.find(a => a.name === finalName)) {
+              S.absentees.push({
+                name: finalName,
+                status: status || 'absent',
+                reason: reason || '',
+                remark: remark || (typeof DEF_REMARK === 'function' ? DEF_REMARK(status || 'absent') : '')
+              });
+              if (!S.roster.includes(finalName)) S.roster.push(finalName);
+              added++;
+            }
           });
-          
+
           if (added > 0) pushUndo();
-          if (typeof save === 'function') save(); 
+          if (typeof save === 'function') save();
           if (typeof render === 'function') render();
           if (typeof toast === 'function') toast(added + ` students added to today's log`);
-          
-        } catch (e) { if (typeof toast === 'function') toast('Could not read that CSV'); } 
+
+        } catch (e) { if (typeof toast === 'function') toast('Could not read that CSV'); }
         input.value = '';
       };
       rd.readAsText(f);
@@ -5564,7 +5621,7 @@
       let ret = [], p = '', q = false;
       for (let i = 0; i < text.length; i++) {
         let c = text[i];
-        if (c === '"') { if (q && text[i+1] === '"') { p += '"'; i++; } else { q = !q; } }
+        if (c === '"') { if (q && text[i + 1] === '"') { p += '"'; i++; } else { q = !q; } }
         else if (c === ',' && !q) { ret.push(p.trim()); p = ''; }
         else { p += c; }
       }
@@ -5578,13 +5635,13 @@
           const lines = String(rd.result).split(/\r?\n/).filter(line => line.trim());
           if (!lines.length) throw new Error('Empty');
           const data = lines.slice(1).map(line => {
-             const cols = _parseCSV(line);
-             return { n: cols[0] || '', name: cols[1] || '', reg: cols[2] || '', ph: cols[3] || '', pa: cols[4] || '' };
+            const cols = _parseCSV(line);
+            return { n: cols[0] || '', name: cols[1] || '', reg: cols[2] || '', ph: cols[3] || '', pa: cols[4] || '' };
           }).filter(r => r.name);
-          
+
           if (data.length) {
             ROSTER = data; S.classRoster = data; S.roster = data.map(d => d.name);
-            if (typeof save === 'function') save(); if (typeof render === 'function') render(); 
+            if (typeof save === 'function') save(); if (typeof render === 'function') render();
             if (typeof toast === 'function') toast(data.length + ' students imported to roster');
           } else {
             if (typeof toast === 'function') toast('No valid names found in CSV');
@@ -5599,15 +5656,15 @@
       if (!S.history || !S.history.length) { if (typeof toast === 'function') toast('No attendance history'); return; }
       const head = ['Date', 'Student Name', 'Status', 'Reason', 'Remark'];
       const lines = [head];
-      
+
       S.history.forEach(h => {
-         const date = h.params ? h.params.pDate : '';
-         if (!date) return;
-         if (h.absentees && h.absentees.length) {
-           h.absentees.forEach(a => { lines.push([date, a.name, a.status || 'absent', a.reason || '', a.remark || '']); });
-         } else {
-           lines.push([date, '(100% Attendance)', 'held', '', '']);
-         }
+        const date = h.params ? h.params.pDate : '';
+        if (!date) return;
+        if (h.absentees && h.absentees.length) {
+          h.absentees.forEach(a => { lines.push([date, a.name, a.status || 'absent', a.reason || '', a.remark || '']); });
+        } else {
+          lines.push([date, '(100% Attendance)', 'held', '', '']);
+        }
       });
       const csv = lines.map(row => row.map(csvCell).join(',')).join('\r\n');
       downloadBlob(csv, (($('pClass').value || 'ARGUS').trim()) + '_history.csv', 'text/csv');
@@ -5620,32 +5677,32 @@
         try {
           const lines = String(rd.result).split(/\r?\n/).filter(line => line.trim());
           if (lines.length < 2) throw new Error('Empty');
-          
-          const groups = {}; 
+
+          const groups = {};
           lines.slice(1).forEach(line => {
-             const cols = _parseCSV(line);
-             const date = cols[0], name = cols[1], status = cols[2], reason = cols[3] || '', remark = cols[4] || '';
-             if (!date) return;
-             if (!groups[date]) groups[date] = [];
-             if (name && name !== '(100% Attendance)' && status !== 'held') {
-                 groups[date].push({ name, status, reason, remark });
-             }
+            const cols = _parseCSV(line);
+            const date = cols[0], name = cols[1], status = cols[2], reason = cols[3] || '', remark = cols[4] || '';
+            if (!date) return;
+            if (!groups[date]) groups[date] = [];
+            if (name && name !== '(100% Attendance)' && status !== 'held') {
+              groups[date].push({ name, status, reason, remark });
+            }
           });
-          
+
           const newHistory = [];
           Object.keys(groups).forEach(date => {
-             newHistory.push({
-                 params: { pDate: date, pHour: 'Auto', pSubj: 'Import', pClass: $('pClass').value || 'ARGUS', pFac: '' },
-                 absentees: groups[date]
-             });
+            newHistory.push({
+              params: { pDate: date, pHour: 'Auto', pSubj: 'Import', pClass: $('pClass').value || 'ARGUS', pFac: '' },
+              absentees: groups[date]
+            });
           });
-          
+
           if (newHistory.length) {
-            S.history = newHistory.sort((a,b) => (b.params.pDate || '').localeCompare(a.params.pDate || ''));
+            S.history = newHistory.sort((a, b) => (b.params.pDate || '').localeCompare(a.params.pDate || ''));
             if (typeof save === 'function') save(); if (typeof render === 'function') render();
             if (typeof toast === 'function') toast(newHistory.length + ' class sessions imported');
           } else {
-             if (typeof toast === 'function') toast('No history records found in CSV');
+            if (typeof toast === 'function') toast('No history records found in CSV');
           }
         } catch (e) { if (typeof toast === 'function') toast('Could not read that CSV'); } input.value = '';
       };
