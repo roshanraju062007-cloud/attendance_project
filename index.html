@@ -4241,13 +4241,13 @@
           <div class="cmd-col">
             <div class="cmd-sticky">
               <div class="cmd-paper">
-                <div class="pph"><span>MH Cockpit — live preview</span><span class="f" id="fileName">—</span></div>
+                <div class="pph"><span>MH Cognition — live preview</span><span class="f" id="fileName">—</span></div>
                 <div class="ppbody">
                   <div id="paper"></div>
                 </div>
               </div>
               <div class="acts" style="margin-top:14px">
-                <button class="btn" onclick="exportMHDocx()">Download MH COCKPIT .docx</button>
+                <button class="btn" onclick="exportMHDocx()">Download MH COGNITION .docx</button>
                 <button class="btn line" onclick="printReportPDF('paper')">Save as PDF</button>
               </div>
               <div class="acts">
@@ -4295,10 +4295,10 @@
               <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line)">
                 <div
                   style="font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--gold);margin-bottom:10px">
-                  MH COCKPIT SUBMISSION FORM</div>
+                  MH COGNITION SUBMISSION FORM</div>
                 <div class="row r2">
                   <div><label>Institution / College</label><input type="text" id="mhInst"
-                      value="MH Cockpit Aviation Academy & Vels University"></div>
+                      value="MH Cognition Aviation Academy & Vels University"></div>
                   <div><label>Programme</label><input type="text" id="mhProg" value="BCA Cloud Computing"></div>
                 </div>
                 <div class="row r2">
@@ -4349,13 +4349,13 @@
           <div class="cmd-col">
             <div class="cmd-sticky">
               <div class="cmd-paper">
-                <div class="pph"><span>MH Cockpit — live preview</span><span class="f" id="fileName2">—</span></div>
+                <div class="pph"><span>MH Cognition — live preview</span><span class="f" id="fileName2">—</span></div>
                 <div class="ppbody">
                   <div id="paper2"></div>
                 </div>
               </div>
               <div class="acts" style="margin-top:14px">
-                <button class="btn" onclick="exportMHDocx()">Download MH COCKPIT .docx</button>
+                <button class="btn" onclick="exportMHDocx()">Download MH COGNITION .docx</button>
               </div>
             </div>
           </div>
@@ -6376,7 +6376,7 @@
         : '';
     }
 
-    /* ═══════════════ MH COCKPIT SUBMISSION FORM ═══════════════ */
+    /* ═══════════════ MH COGNITION SUBMISSION FORM ═══════════════ */
     const MH_CODE = { informed: 'AUTH', unauthorized: 'UNAUTH', groom: 'GROOM', od: 'OD', susp: 'SUSP' };
     const MH_CODES = ['AUTH', 'UNAUTH', 'GROOM', 'OD', 'SUSP'];
     function mhCode(status) { return MH_CODE[status] || 'UNAUTH'; }
@@ -6412,7 +6412,7 @@
       const td = (t, o) => { o = o || {}; return '<td style="padding:6px 8px;font-size:12px;font-family:\'Times New Roman\',serif;border:1px solid #BFBFBF' + (o.bg ? ';background:' + o.bg : '') + (o.b ? ';font-weight:700' : '') + (o.c ? ';color:' + o.c : '') + (o.center ? ';text-align:center' : '') + '">' + esc(t == null ? '' : String(t)) + '</td>'; };
       const secH = (t, fill) => '<div style="font-weight:700;font-size:12px;font-family:\'Times New Roman\',serif;color:' + (fill || '#2E75B6') + ';margin:12px 0 5px">' + esc(t) + '</div>';
       let h = '<div style="background:#fff;color:#000;font-family:\'Times New Roman\',serif;padding:20px 22px">';
-      h += '<div style="text-align:center;font-weight:700;font-size:15px">MH COCKPIT \u2014 DAILY ATTENDANCE SUBMISSION FORM</div>';
+      h += '<div style="text-align:center;font-weight:700;font-size:15px">MH COGNITION \u2014 DAILY ATTENDANCE SUBMISSION FORM</div>';
       h += '<div style="text-align:center;font-size:11px;color:#444;margin-bottom:12px">For Class In Charges &amp; CPL Instructors \u00b7 Submit by 12:30 PM daily</div>';
       /* Section A */
       h += secH('SECTION A \u2014 SUBMISSION DETAILS');
@@ -6452,7 +6452,7 @@
       h += '</div>';
       return h;
     }
-    function showMHForm() { const box = $('mhPreview'); if (box) box.innerHTML = mhPreviewHTML(); if (typeof renderPaper === 'function') renderPaper(); toast('MH COCKPIT form updated'); }
+    function showMHForm() { const box = $('mhPreview'); if (box) box.innerHTML = mhPreviewHTML(); if (typeof renderPaper === 'function') renderPaper(); toast('MH COGNITION form updated'); }
     function exportMHDocx() {
       if (typeof docx === 'undefined') { toast('Document engine offline \u2014 reconnect and reload'); return; }
       const d = mhData();
@@ -6474,7 +6474,7 @@
       const H = (t) => new P({ spacing: { before: 220, after: 80 }, children: [tr(t, { b: true, color: '2E75B6' })] });
       const note = (t, color) => new P({ spacing: { after: 80 }, children: [tr(t, { color: color || '444444' })] });
       const kids = [];
-      kids.push(new P({ alignment: AL.CENTER, children: [tr('MH COCKPIT \u2014 DAILY ATTENDANCE SUBMISSION FORM', { b: true })] }));
+      kids.push(new P({ alignment: AL.CENTER, children: [tr('MH COGNITION \u2014 DAILY ATTENDANCE SUBMISSION FORM', { b: true })] }));
       kids.push(new P({ alignment: AL.CENTER, spacing: { after: 160 }, children: [tr('For Class In Charges & CPL Instructors \u00b7 Submit by 12:30 PM daily')] }));
       /* Section A */
       kids.push(H('SECTION A \u2014 SUBMISSION DETAILS'));
